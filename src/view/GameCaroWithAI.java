@@ -13,12 +13,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import model.Caro_Button;
 import model.Point;
+
 /**
  *
  * @author ASUS
  */
 public class GameCaroWithAI extends javax.swing.JFrame {
-    
+
     private static final int ROW = 20;
     private static final int COL = 20;
     private final Caro_Button[][] caro_Buttons = new Caro_Button[COL][ROW];
@@ -28,43 +29,43 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     private int aIWin = 0;
     private int gameMode;
     private int currentPlayer;
-    
+
     /**
      * Creates new form PlayGame
      */
     public GameCaroWithAI(int gameMode, int currentPlayer, String PlayerName) {
-                this.gameMode = gameMode;
-                this.currentPlayer = currentPlayer;
-                initComponents();
-               
-                this.jPanel_Container_button.setLayout(new GridLayout(20, 20));
-                this.addButtonIntoBoard();
-                
-                this.getContentPane().setLayout(null);
-                this.setVisible(true);
-                this.setLocationRelativeTo(null);
-                this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resource_caro/icon.png")));
-                this.jLabel_image_player1.setIcon(new ImageIcon("src/resource_caro/tic-tac-toe.png"));
-                this.jLabel_image_player2.setIcon(new ImageIcon("src/resource_caro/ai.png"));
-                this.jLabel_name_human.setText(PlayerName+"");
-               
-                this.newGame();
+        this.gameMode = gameMode;
+        this.currentPlayer = currentPlayer;
+        initComponents();
+
+        this.jPanel_Container_button.setLayout(new GridLayout(20, 20));
+        this.addButtonIntoBoard();
+
+        this.getContentPane().setLayout(null);
+        this.setVisible(true);
+        this.setLocationRelativeTo(null);
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resource_caro/icon.png")));
+        this.jLabel_image_player1.setIcon(new ImageIcon("src/resource_caro/tic-tac-toe.png"));
+        this.jLabel_image_player2.setIcon(new ImageIcon("src/resource_caro/ai.png"));
+        this.jLabel_name_human.setText(PlayerName + "");
+
+        this.newGame();
     }
 
-        private void addButtonIntoBoard(){
+    private void addButtonIntoBoard() {
         //Setup play button
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COL; j++) {
                 Point point = new Point(j, j);
-                caro_Buttons[i][j] = new Caro_Button(i,j,true);
+                caro_Buttons[i][j] = new Caro_Button(i, j, true);
                 this.jPanel_Container_button.add(caro_Buttons[i][j]);
                 caro_Buttons[i][j].addMouseListener(new MouseListener() {
                     @Override
                     public void mouseReleased(MouseEvent e) {
-                        Caro_Button caro_Buttons_event =  (Caro_Button) e.getSource();
-                            if(caro_Buttons_event.isEnabled()){
-                                caro_Buttons_event.setState(true);
-                             if (getScore(getMatrixBoard(), true, false) >= winScore) {
+                        Caro_Button caro_Buttons_event = (Caro_Button) e.getSource();
+                        if (caro_Buttons_event.isEnabled()) {
+                            caro_Buttons_event.setState(true);
+                            if (getScore(getMatrixBoard(), true, false) >= winScore) {
                                 JOptionPane.showMessageDialog(null, "Bạn đã thắng");
                                 userWin++;
                                 newGame();
@@ -72,27 +73,15 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                                 caro_Buttons[9][9].setState(false);
                                 return;
                             }
+                            aiMove();
+                        }
 
-                            int nextMoveX = 0, nextMoveY = 0;
-                            int[] bestMove = calcNextMove(gameMode);
-                            if (bestMove != null) {
-                                nextMoveX = bestMove[0];
-                                nextMoveY = bestMove[1];
-                            }
-                                caro_Buttons[nextMoveX][nextMoveY].setState(false);
-                                caro_Buttons[nextMoveX][nextMoveY].setEnabled(false);
-                            if (getScore(getMatrixBoard(), false, true) >= winScore) {
-                                JOptionPane.showMessageDialog(null, "Bạn đã thua");
-                                aIWin++;
-                                JOptionPane.showMessageDialog(rootPane, "Bạn đã được máy nhường đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
-                                newGame();
-                            }
-                         }
                     }
+
                     @Override
                     public void mousePressed(MouseEvent e) {
-                            
                     }
+
                     @Override
                     public void mouseExited(MouseEvent e) {
                     }
@@ -107,26 +96,47 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 });
             }
         }
-}
-    
+    }
+
+  
+
+    private void aiMove() {
+        int nextMoveX = 0, nextMoveY = 0;
+        int[] bestMove = calcNextMove(gameMode);
+        if (bestMove != null) {
+            nextMoveX = bestMove[0];
+            nextMoveY = bestMove[1];
+        }
+        caro_Buttons[nextMoveX][nextMoveY].setState(false);
+        aiEndGameCheck();
+    }
+
+    private void aiEndGameCheck() {
+        if (getScore(getMatrixBoard(), false, true) >= winScore) {
+            JOptionPane.showMessageDialog(null, "Bạn đã thua");
+            aIWin++;
+            JOptionPane.showMessageDialog(rootPane, "Bạn đã được máy nhường đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
+            newGame();
+        }
+    }
+
     private void newGame() {
         gameNumber++;
-        this.jlabel_game_count.setText("Game "+gameNumber);
-        this.Jlabel_Score_Human.setText(""+userWin);
-        this.jlabel_score_AI.setText(""+aIWin);
-        
+        this.jlabel_game_count.setText("Game " + gameNumber);
+        this.Jlabel_Score_Human.setText("" + userWin);
+        this.jlabel_score_AI.setText("" + aIWin);
+
         for (int i = 0; i < caro_Buttons.length; i++) {
             for (int j = 0; j < caro_Buttons.length; j++) {
                 caro_Buttons[i][j].resetState();
             }
         }
         if (currentPlayer == 1 && gameNumber == 1) {
-             JOptionPane.showMessageDialog(rootPane, "Máy đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
-                                caro_Buttons[9][9].setState(false);
-        }else if(currentPlayer == 0 && gameNumber == 1){
-              JOptionPane.showMessageDialog(rootPane, "Bạn đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Máy đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
+            caro_Buttons[9][9].setState(false);
+        } else if (currentPlayer == 0 && gameNumber == 1) {
+            JOptionPane.showMessageDialog(rootPane, "Bạn đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
         }
-
     }
 
     public int[] calcNextMove(int depth) {
@@ -150,7 +160,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
 
         } else {
 
-            bestMove = minimaxSearchAB(depth, board, true, -999991, winScore);
+            bestMove = minimaxSearchAB(depth, board, true, -999999, winScore);
             if (bestMove[1] == null) {
                 move = null;
             } else {
@@ -190,13 +200,9 @@ public class GameCaroWithAI extends javax.swing.JFrame {
 
     private Object[] searchLoseMove(int[][] matrix) {
         ArrayList<int[]> allPossibleMoves = generateMoves(matrix);
-        System.out.println(allPossibleMoves.size());
-
         Object[] losingMove = new Object[3];
-
         for (int[] move : allPossibleMoves) {
             int[][] dummyBoard = playNextMove(matrix, move, true);
-
             // If the white player has a winning score in that temporary board, return the move.
             if (getScore(dummyBoard, true, false) >= winScore) {
                 losingMove[1] = move[0];
@@ -293,23 +299,19 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         // Tìm những tất cả những ô trống nhưng có đánh XO liền kề
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
-
                 if (boardMatrix[i][j] > 0) {
                     continue;
                 }
-
                 if (i > 0) {
                     if (j > 0) {
-                        if (boardMatrix[i - 1][j - 1] > 0
-                                || boardMatrix[i][j - 1] > 0) {
+                        if (boardMatrix[i - 1][j - 1] > 0 || boardMatrix[i][j - 1] > 0) {
                             int[] move = {i, j};
                             moveList.add(move);
                             continue;
                         }
                     }
                     if (j < boardSize - 1) {
-                        if (boardMatrix[i - 1][j + 1] > 0
-                                || boardMatrix[i][j + 1] > 0) {
+                        if (boardMatrix[i - 1][j + 1] > 0 || boardMatrix[i][j + 1] > 0) {
                             int[] move = {i, j};
                             moveList.add(move);
                             continue;
@@ -321,18 +323,17 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                         continue;
                     }
                 }
+
                 if (i < boardSize - 1) {
                     if (j > 0) {
-                        if (boardMatrix[i + 1][j - 1] > 0
-                                || boardMatrix[i][j - 1] > 0) {
+                        if (boardMatrix[i + 1][j - 1] > 0 || boardMatrix[i][j - 1] > 0) {
                             int[] move = {i, j};
                             moveList.add(move);
                             continue;
                         }
                     }
                     if (j < boardSize - 1) {
-                        if (boardMatrix[i + 1][j + 1] > 0
-                                || boardMatrix[i][j + 1] > 0) {
+                        if (boardMatrix[i + 1][j + 1] > 0 || boardMatrix[i][j + 1] > 0) {
                             int[] move = {i, j};
                             moveList.add(move);
                             continue;
@@ -350,12 +351,12 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         return moveList;
 
     }
- 
-    public int getScore(int[][] board, boolean forX, boolean blacksTurn) {
 
-        return evaluateHorizontal(board, forX, blacksTurn)
-                + evaluateVertical(board, forX, blacksTurn)
-                + evaluateDiagonal(board, forX, blacksTurn);
+    public int getScore(int[][] boardMatrix, boolean forX, boolean blacksTurn) {
+
+        return evaluateHorizontal(boardMatrix, forX, blacksTurn)
+                + evaluateVertical(boardMatrix, forX, blacksTurn)
+                + evaluateDiagonal(boardMatrix, forX, blacksTurn);
     }
 
     public static int evaluateHorizontal(int[][] boardMatrix, boolean forX, boolean playersTurn) {
@@ -365,8 +366,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         int score = 0;
 
         for (int i = 0; i < boardMatrix.length; i++) {
-            for (int j = 0; j < boardMatrix[0].length; j++) {
-
+            for (int j = 0; j < boardMatrix.length; j++) {
                 if (boardMatrix[i][j] == (forX ? 2 : 1)) {
                     //2. Đếm...
                     consecutive++;
@@ -403,7 +403,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         }
         return score;
     }
-    // hàm tính toán đường dọc tương tự như đường ngan
+    // hàm tính toán đường dọc tương tự như đường ngang
 
     public static int evaluateVertical(int[][] boardMatrix, boolean forX, boolean playersTurn) {
 
@@ -432,6 +432,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                     blocks = 2;
                 }
             }
+
             if (consecutive > 0) {
                 score += getConsecutiveSetScore(consecutive, blocks, forX == playersTurn);
 
@@ -521,7 +522,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     }
 
     public static int getConsecutiveSetScore(int count, int blocks, boolean currentTurn) {
-        final int winGuarantee = 1000000;
+        final int winGuarantee = 10000000;
         if (blocks == 2 && count <= 5) {
             return 0;
         }
@@ -536,7 +537,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                     return winGuarantee;
                 } else {
                     if (blocks == 0) {
-                        return winGuarantee / 4;
+                        return winGuarantee;
                     } else {
                         return 200;
                     }
@@ -579,7 +580,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         }
         return winScore * 2;
     }
-    
+
     public int[][] getMatrixBoard() {
         int[][] matrix = new int[ROW][COL];
         for (int i = 0; i < caro_Buttons.length; i++) {
@@ -590,6 +591,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         }
         return matrix;
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -851,15 +853,14 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbutton_go_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbutton_go_backActionPerformed
-                this.dispose();
-                MainMenu newMainMenu = new MainMenu();
-                    // TODO add your handling code here:
+        this.dispose();
+        MainMenu newMainMenu = new MainMenu();
+        // TODO add your handling code here:
     }//GEN-LAST:event_jbutton_go_backActionPerformed
 
-        /**
+    /**
      * @param args the command line arguments
      */
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JLabel Jlabel_Score_Human;

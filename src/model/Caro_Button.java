@@ -53,7 +53,8 @@ public class Caro_Button extends JButton {
                 });
     }
     public void setState(boolean isHumanPlay) {
-        if (isHumanPlay) {
+        if(this.isEnabled()){
+            if (isHumanPlay) {
             this.value = 2;
             setIcon(xImageIcon);
             setDisabledIcon(xImageIcon);
@@ -65,6 +66,10 @@ public class Caro_Button extends JButton {
             setDisabledIcon(oImageIcon);
               this.setEnabled(false);
         }
+      }else{
+            return;
+        }
+    
     }
       public void resetState() {
         this.value = 0;
