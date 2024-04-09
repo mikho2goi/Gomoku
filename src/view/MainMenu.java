@@ -131,7 +131,7 @@ public class MainMenu extends javax.swing.JFrame {
         if ( playerName.equals("")) {
            JOptionPane.showMessageDialog(this, "Không được để trống tên");
         }else{
-             this.setVisible(false);
+             this.dispose();
         }
     }//GEN-LAST:event_humanModeActionPerformed
 

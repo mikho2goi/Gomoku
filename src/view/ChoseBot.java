@@ -111,34 +111,45 @@ private MainMenu mainMenu;
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    int result;
     // hàm lưu kết quả 
-    private void resultMode(){
-            result = JOptionPane.showConfirmDialog(this, "Bạn có muốn đánh trước không", "Chọn lượt chơi", JOptionPane.YES_NO_OPTION);
-            if(result >= 0)
-            this.setVisible(false);
-            this.mainMenu.setVisible(false);
-        
+    private int resultMode(){
+          int  result = JOptionPane.showConfirmDialog(this, "Bạn có muốn đánh trước không", "Chọn lượt chơi", JOptionPane.YES_NO_OPTION);
+            return result;
     }
     // result = 0 thì người chơi đánh trước => X, result = 1 thì ngược lại máy đánh trc
     
     private void easyModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_easyModeActionPerformed
         // TODO add your handling code here:
-            resultMode();
-            GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(1, result, mainMenu.playerName);
+          int result = resultMode();
+               if (result < 0) {
+            return;
+        }
+          this.dispose();
+          this.mainMenu.dispose();
+          GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(1, result, mainMenu.playerName);
             
     }//GEN-LAST:event_easyModeActionPerformed
 
     private void middleModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_middleModeActionPerformed
         // TODO add your handling code here:
-            resultMode();
-            GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(2,result,mainMenu.playerName);
+                 int result = resultMode();
+                      if (result < 0) {
+            return;
+        }
+                   this.dispose();
+                          this.mainMenu.dispose();
+                 GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(2,result,mainMenu.playerName);
     }//GEN-LAST:event_middleModeActionPerformed
 
     private void hardModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hardModeActionPerformed
         // TODO add your handling code here:
-            resultMode();
-            GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(3,result,mainMenu.playerName);
+              int result = resultMode();
+              if (result < 0) {
+            return;
+        }
+                this.dispose();
+                       this.mainMenu.dispose();
+              GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(3,result,mainMenu.playerName);
     }//GEN-LAST:event_hardModeActionPerformed
 
     /**

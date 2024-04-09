@@ -15,7 +15,7 @@ public class Caro_Button extends JButton {
     public Point point;
     public static boolean isXMove = true;
     public int value = 0;
-    private final ImageIcon xImageIcon = new ImageIcon("src/resource_caro/XButton.png");
+    private final ImageIcon xImageIcon = new ImageIcon("src/resource_caro/x.png");
     private final ImageIcon oImageIcon  = new ImageIcon("src/resource_caro/o.png");
     public boolean state;
     public ImageIcon playerImagePlay;
@@ -65,6 +65,7 @@ public class Caro_Button extends JButton {
             setIcon(oImageIcon);
             setDisabledIcon(oImageIcon);
               this.setEnabled(false);
+              this.setBorder(new BasicBorders.ButtonBorder(Color.red, Color.red, Color.red, Color.red));
         }
       }else{
             return;

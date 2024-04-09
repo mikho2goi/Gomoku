@@ -3,13 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/TEST_NLCS/src/view/GameCaroWithAI.java</file>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/TEST_NLCS/src/model/Caro_Button.java</file>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/TEST_NLCS/src/controller/PlayGame.java</file>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/TEST_NLCS/src/view/MainMenu.java</file>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/TEST_NLCS/src/model/Player.java</file>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/TEST_NLCS/src/view/ChoseBot.java</file>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/TEST_NLCS/src/model/Point.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/view/GameCaroWithAI.java</file>
         </group>
     </open-files>
 </project-private>
