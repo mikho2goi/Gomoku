@@ -12,7 +12,6 @@ import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.plaf.metal.MetalBorders;
 
 public class Caro_Button extends JButton {
-    public Point point;
     public static boolean isXMove = true;
     public int value = 0;
     private final ImageIcon xImageIcon = new ImageIcon("src/resource_caro/x.png");
@@ -23,7 +22,6 @@ public class Caro_Button extends JButton {
     
     public Caro_Button(int x, int y, boolean state) {
         this.setBackground(Color.WHITE);
-        this.point = new Point(x, y);
         this.addMouseListener(new MouseListener() {
 
                     @Override

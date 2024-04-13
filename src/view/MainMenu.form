@@ -112,7 +112,7 @@
         </Component>
         <Component class="javax.swing.JButton" name="humanMode">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Ch&#x1a1;i V&#x1edb;i Ng&#x1b0;&#x1edd;i"/>
+            <Property name="text" type="java.lang.String" value="1 vs 1"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="humanModeActionPerformed"/>

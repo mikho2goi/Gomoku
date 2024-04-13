@@ -53,7 +53,7 @@ public class MainMenu extends javax.swing.JFrame {
 
         jLabel2.setText("Nhập Tên:");
 
-        humanMode.setText("Chơi Với Người");
+        humanMode.setText("1 vs 1");
         humanMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 humanModeActionPerformed(evt);
