@@ -6,23 +6,24 @@ package view;
 
 import java.awt.Toolkit;
 import javax.swing.JOptionPane;
+import model.Player;
 
 /**
  *
  * @author ASUS
  */
 public class MainMenu extends javax.swing.JFrame {
-
+    Player player;
     /**
      * Creates new form MainMenu
      */
-    String playerName;
-    public MainMenu() {
+    public MainMenu(Player player) {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resource_caro/icon.png")));
         this.setVisible(true);
         this.setResizable(false);
+        this.player = player;
     }
 
     /**
@@ -36,11 +37,10 @@ public class MainMenu extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         panel1 = new java.awt.Panel();
-        namePlayer = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         humanMode = new javax.swing.JButton();
         AIMode = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        rankBoard = new javax.swing.JButton();
+        accountData = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -48,10 +48,6 @@ public class MainMenu extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 102, 102));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Caro game");
-
-        namePlayer.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-
-        jLabel2.setText("Nhập Tên:");
 
         humanMode.setText("1 vs 1");
         humanMode.addActionListener(new java.awt.event.ActionListener() {
@@ -67,50 +63,60 @@ public class MainMenu extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setText("Chọn Chế Độ");
+        rankBoard.setText("Bảng Xếp Hạng");
+        rankBoard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rankBoardActionPerformed(evt);
+            }
+        });
+
+        accountData.setText("Thông tin cá nhân");
+        accountData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accountDataActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel1Layout = new javax.swing.GroupLayout(panel1);
         panel1.setLayout(panel1Layout);
         panel1Layout.setHorizontalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
-                .addGap(60, 60, 60)
+            .addGroup(panel1Layout.createSequentialGroup()
+                .addGap(65, 65, 65)
                 .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel1Layout.createSequentialGroup()
-                        .addComponent(humanMode, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32)
-                        .addComponent(AIMode, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE))
-                    .addComponent(namePlayer))
-                .addGap(72, 72, 72))
+                    .addComponent(humanMode, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(accountData))
+                .addGap(131, 131, 131)
+                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(rankBoard, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                    .addComponent(AIMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(58, Short.MAX_VALUE))
         );
         panel1Layout.setVerticalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(namePlayer, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(49, 49, 49)
-                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(humanMode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(AIMode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(37, Short.MAX_VALUE))
+                    .addComponent(AIMode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(41, 41, 41)
+                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(accountData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rankBoard, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -119,7 +125,7 @@ public class MainMenu extends javax.swing.JFrame {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+                .addContainerGap())
         );
 
         pack();
@@ -127,24 +133,24 @@ public class MainMenu extends javax.swing.JFrame {
 
     private void humanModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_humanModeActionPerformed
         // TODO add your handling code here:
-        String playerName = this.namePlayer.getText();
-        if ( playerName.equals("")) {
-           JOptionPane.showMessageDialog(this, "Không được để trống tên");
-        }else{
+             GameCaro1vs1 game = new GameCaro1vs1(SOMEBITS, PROPERTIES, player);
              this.dispose();
-        }
     }//GEN-LAST:event_humanModeActionPerformed
 
     private void AIModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AIModeActionPerformed
         // TODO add your handling code here:
-         playerName = this.namePlayer.getText();
-        if ( playerName.equals("")){
-           JOptionPane.showMessageDialog(this, "Không được để trống tên");
-        }else{
              ChoseBot choseBot = new ChoseBot(this);
              choseBot.setDefaultCloseOperation(1);
-        }
+        
     }//GEN-LAST:event_AIModeActionPerformed
+
+    private void rankBoardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rankBoardActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_rankBoardActionPerformed
+
+    private void accountDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accountDataActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_accountDataActionPerformed
 
     /**
      * @param args the command line arguments
@@ -153,11 +159,10 @@ public class MainMenu extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AIMode;
+    private javax.swing.JButton accountData;
     private javax.swing.JButton humanMode;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JTextField namePlayer;
     private java.awt.Panel panel1;
+    private javax.swing.JButton rankBoard;
     // End of variables declaration//GEN-END:variables
 }

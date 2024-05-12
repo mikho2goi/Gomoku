@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.plaf.metal.MetalBorders;
 import model.Caro_Button;
+import model.Player;
 
 /**
  *
@@ -29,18 +30,19 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     private int userWin = 0;
     private int aIWin = 0;
     private int gameMode;
-    private int currentPlayer;
+    public int playerTurn;
     private static final int  allButton = COL*ROW;
     private int countButtonEnable = 0;
     private Stack<Caro_Button> stackOfButtons = new Stack<>();
+    private Player currentPlayer;
     /**
      * Creates new form PlayGame
      */
-    public GameCaroWithAI(int gameMode, int currentPlayer, String PlayerName) {
+    public GameCaroWithAI(int gameMode, int playerTurn, Player currentPlayer) {
         this.gameMode = gameMode;
         this.currentPlayer = currentPlayer;
         initComponents();
-
+        this.playerTurn = playerTurn;
         this.jPanel_Container_button.setLayout(new GridLayout(19, 19));
         this.addButtonIntoBoard();
 
@@ -50,7 +52,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resource_caro/icon.png")));
         this.jLabel_image_player1.setIcon(new ImageIcon("src/resource_caro/human.png"));
         this.jLabel_image_player2.setIcon(new ImageIcon("src/resource_caro/ai.png"));
-        this.jLabel_name_human.setText(PlayerName + "");
+        this.jLabel_name_human.setText(currentPlayer.getPlayerUserName());
         this.jTextArea1.setText("\n Luật chơi: Ai có đủ 5 X hoặc O trên cùng 1 hàng thẳng, chéo, ngang trước thì sẽ\n giành chiến thắng\n"
                 + "\n Sẽ không tính thắng với hai trường hợp sau:"
                 + "\n - Quân thứ 5 của bạn ở hàng cuối hoặc cột cuối"
@@ -125,12 +127,12 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 caro_Buttons[i][j].resetState();
             }
         }
-        if (currentPlayer == 1 && gameNumber == 1) {
+        if (playerTurn == 1 && gameNumber == 1) {
             JOptionPane.showMessageDialog(rootPane, "Máy đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
             caro_Buttons[9][9].setState(false);
             countButtonEnable++;
             stackOfButtons.push(caro_Buttons[9][9]);
-        } else if (currentPlayer == 0 && gameNumber == 1) {
+        } else if (playerTurn == 0 && gameNumber == 1) {
             JOptionPane.showMessageDialog(rootPane, "Bạn đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -569,7 +571,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                     if (blocks == 0 || blocks == 1) {
                         return winGuarantee/2;
                     } else {
-                        return 2;
+                        return 500;
                     }
                 }
             }
@@ -579,7 +581,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                     // Nếu lược của currentTurn thì ăn 3 + 1 = 4 (không bị block) -> 50000 -> Khả năng thắng cao. 
                     // Ngược lại không phải lược của currentTurn thì khả năng bị blocks cao
                     if (currentTurn) {
-                        return winGuarantee/4;
+                        return winGuarantee/3;
                     } else {
                         return 200;
                     }
@@ -646,8 +648,8 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         Jlabel_Score_Human = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jlabel_score_AI = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
+        humanScore = new javax.swing.JLabel();
+        AIScore = new javax.swing.JLabel();
         jlabel_game_count = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -774,9 +776,9 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         jlabel_score_AI.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlabel_score_AI.setText("0");
 
-        jLabel7.setText("Bạn");
+        humanScore.setText("Người Chơi");
 
-        jLabel11.setText("Máy");
+        AIScore.setText("Máy");
 
         jlabel_game_count.setBackground(new java.awt.Color(255, 51, 102));
         jlabel_game_count.setFont(new java.awt.Font("Segoe UI", 3, 36)); // NOI18N
@@ -789,10 +791,10 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(127, 127, 127)
-                .addComponent(jLabel7)
-                .addGap(137, 137, 137)
-                .addComponent(jLabel11)
+                .addGap(107, 107, 107)
+                .addComponent(humanScore)
+                .addGap(118, 118, 118)
+                .addComponent(AIScore)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
@@ -821,8 +823,8 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                     .addComponent(jlabel_score_AI))
                 .addGap(8, 8, 8)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(jLabel11))
+                    .addComponent(humanScore)
+                    .addComponent(AIScore))
                 .addContainerGap())
         );
 
@@ -846,7 +848,9 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jButton1.setText("Bảng xếp hạng");
+        jButton1.setText("bàn cờ cũ");
+        jButton1.setToolTipText("");
+        jButton1.setActionCommand("");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -856,8 +860,8 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jbutton_go_back, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addContainerGap())
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26))
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
@@ -900,7 +904,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
 
     private void jbutton_go_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbutton_go_backActionPerformed
         this.dispose();
-        MainMenu newMainMenu = new MainMenu();
+        MainMenu newMainMenu = new MainMenu(currentPlayer);
         // TODO add your handling code here:
     }//GEN-LAST:event_jbutton_go_backActionPerformed
 
@@ -909,12 +913,12 @@ public class GameCaroWithAI extends javax.swing.JFrame {
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel AIScore;
     public javax.swing.JLabel Jlabel_Score_Human;
+    private javax.swing.JLabel humanScore;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel_image_player1;
     private javax.swing.JLabel jLabel_image_player2;
     public javax.swing.JLabel jLabel_name_human;

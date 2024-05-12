@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package test;
+import view.LoginForm;
 import view.MainMenu;
 
 /**
@@ -11,6 +12,6 @@ import view.MainMenu;
  */
 public class test {
     public static void main(String[] args) {
-                MainMenu game = new MainMenu();
+          LoginForm loginForm = new LoginForm();
     }
 }

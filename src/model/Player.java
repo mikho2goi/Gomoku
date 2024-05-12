@@ -4,179 +4,104 @@
  */
 package model;
 
-import java.awt.Image;
+import java.util.Queue;
 
 /**
  *
  * @author ASUS
  */
 public class Player {
-      private int ID;
-    private String username;
-    private String password;
-    private String nickname;
-    private Image avatar;
-    private int numberOfGame;
-    private int numberOfWin;
-    private int numberOfDraw;
-    private boolean online;
-    private boolean playing;
-    private int rank;
-
-    public Player(int ID, String username, String password, String nickname, Image avatar, int numberOfGame, int numberOfWin, int numberOfDraw, int rank) {
-        this.ID = ID;
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
-        this.avatar = avatar;
-        this.numberOfGame = numberOfGame;
-        this.numberOfWin = numberOfWin;
-        this.numberOfDraw = numberOfDraw;
-        this.rank = rank;
+    
+    private int phayerID = 0;
+    private String  playerUserName;
+    private String playerPassWord;
+    private int playerRank = 0;
+    private double playerWinRate = 0;
+    private double playerScore = 0;
+    private int numberOfGame = 0 ;
+    private  Queue<Object> unfinishedBoard = null;
+    private final int winScore = 2;
+    private final int loseScore = 0;
+    private final int drawScore = 1;
+    public Player(String playerUserName,String playerPassWord) {
+        this.playerUserName = playerUserName;
+        this.playerPassWord = playerPassWord;
     }
 
-    public Player(int ID, String username, String password, String nickname, Image avatar, int numberOfGame, int numberOfWin, int numberOfDraw, boolean online, boolean playing) {
-        this.ID = ID;
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
-        this.avatar = avatar;
-        this.numberOfGame = numberOfGame;
-        this.numberOfWin = numberOfWin;
-        this.numberOfDraw = numberOfDraw;
-        this.online = online;
-        this.playing = playing;
+    public Player(int ID, String playerUserName, String playerPassWord, int playerRank, double playerWinRate,double playerScore,int numberOfGame,String unFinishedBoard ) {
+        
+         this.phayerID = ID;
+         this.playerUserName = playerUserName;
+         this.playerPassWord = playerPassWord;
+         this.playerRank = playerRank;
+         this.playerWinRate = playerWinRate;
+         this.playerScore = playerScore;
+         this.numberOfGame = numberOfGame;
+    }
+    
+    public int getPlayerID() {
+        return phayerID;
     }
 
-    public Player(int ID, String username, String password, String nickname, Image avatar, int numberOfGame, int numberOfWin, int numberOfDraw) {
-        this.ID = ID;
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
-        this.avatar = avatar;
-        this.numberOfGame = numberOfGame;
-        this.numberOfWin = numberOfWin;
-        this.numberOfDraw = numberOfDraw;
+    public String getPlayerUserName() {
+        return playerUserName;
     }
 
-
-    public Player(int ID, String nickname) {
-        this.ID = ID;
-        this.nickname = nickname;
+    public String getPlayerPassWord() {
+        return playerPassWord;
     }
 
-    public Player(int ID, String nickname, boolean online, boolean playing) {
-        this.ID = ID;
-        this.nickname = nickname;
-        this.online = online;
-        this.playing = playing;
+    public int getPlayerRank() {
+        return playerRank;
     }
 
-    public Player(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public double getPlayerWinRate() {
+        return playerWinRate;
     }
 
-
-    public Player(String username, String password, String nickname, Image avatar) {
-        this.username = username;
-        this.password = password;
-        this.nickname = nickname;
-        this.avatar = avatar;
+    public double getPlayerScore() {
+        return playerScore;
     }
 
-    public Player(int ID, String nickname, int numberOfGame, int numberOfDraw) {
-        this.ID = ID;
-        this.nickname = nickname;
-        this.numberOfGame = numberOfGame;
-        this.numberOfDraw = numberOfDraw;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-    public int getID() {
-        return ID;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public Image getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(Image avatar) {
-        this.avatar = avatar;
-    }
-
-    public int getNumberOfGame() {
+        public int getNumberOfGame() {
         return numberOfGame;
     }
+    public void setPlayerID(int phayerID) {
+        this.phayerID = phayerID;
+    }
 
+    public void setPlayerUserName(String playerUserName) {
+        this.playerUserName = playerUserName;
+    }
+
+    public void setPlayerPassWord(String playerPassWord) {
+        this.playerPassWord = playerPassWord;
+    }
+
+    public void setPlayerRank(int playerRank) {
+        this.playerRank = playerRank;
+    }
+
+    public void setPlayerWinRate(double playerWinRate) {
+        this.playerWinRate = playerWinRate;
+    }
+
+    public void setPlayerScore(double playerScore) {
+        this.playerScore = playerScore;
+    }
+    
     public void setNumberOfGame(int numberOfGame) {
         this.numberOfGame = numberOfGame;
     }
-
-    public int getNumberOfWin() {
-        return numberOfWin;
+    
+    public void setScoreWin(){
+        this.playerScore += winScore;
     }
-
-    public void setNumberOfWin(int numberOfWin) {
-        this.numberOfWin = numberOfWin;
+    public void setScoreLose(){
+        this.playerScore += loseScore;
     }
-
-    public boolean isOnline() {
-        return online;
+    public void setScoreDraw(){
+        this.playerScore += drawScore;
     }
-
-    public void setOnline(boolean isOnline) {
-        this.online = isOnline;
-    }
-
-    public boolean isPlaying() {
-        return playing;
-    }
-
-    public void setPlaying(boolean isPlaying) {
-        this.playing = isPlaying;
-    }
-
-    public int getNumberOfDraw() {
-        return numberOfDraw;
-    }
-
-    public void setNumberOfDraw(int numberOfDraw) {
-        this.numberOfDraw = numberOfDraw;
-    }
-
-
-
-
+    
 }

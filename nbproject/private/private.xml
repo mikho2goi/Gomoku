@@ -3,7 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/view/GameCaroWithAI.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/controller/PlayGame.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/model/Player.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/model/Caro_Button.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/database/DAOInterface.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/view/LoginForm.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/database/PlayerDAO.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/view/GameCaro1vs1.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/database/JDBCUtil.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/Gomoku/src/view/RegisterForm.java</file>
         </group>
     </open-files>
 </project-private>
