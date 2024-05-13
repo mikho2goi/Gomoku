@@ -4,6 +4,7 @@
  */
 package database;
 
+import database.JDBCUtil;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import model.Player;
@@ -12,10 +13,12 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.ResultSet;
+
 /**
  *
  * @author ASUS
  */
+
 public class PlayerDAO implements DAOInterface<Player> {
 
     public static PlayerDAO getInstance() {
@@ -29,14 +32,13 @@ public class PlayerDAO implements DAOInterface<Player> {
             //make connection
             Connection con = JDBCUtil.getConnection();
             // statement
-            String sql = "INSERT INTO player (ID,playerUserName,playerPassWord) "
-                    + "VALUES (?, ?, ?)";
+            String sql = "INSERT INTO player (playerUserName,playerPassWord) "
+                    + "VALUES ( ?, ?)";
 
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setInt(1, t.getPlayerID());
-            pst.setString(2, t.getPlayerUserName());
-            pst.setString(3, t.getPlayerPassWord());
+            pst.setString(1, t.getPlayerUserName());
+            pst.setString(2, t.getPlayerPassWord());
             //excute
             result = pst.executeUpdate();
          
@@ -50,21 +52,35 @@ public class PlayerDAO implements DAOInterface<Player> {
 
     @Override
     public void update(Player t) {
-             int result = 0;
         try {
             //make connection
             Connection con = JDBCUtil.getConnection();
             // statement
-            String sql = "UPDATE INTO player (ID,playerUserName,playerPassWord) "
-                    + "VALUES (?, ?, ?)";
+            String sql = "UPDATE player "
+                    + "SET numberOfGame = ?,"
+                    + "playerWinRate = ?,"
+                    + "playerScore = ?,"
+                    + "winNumber = ?,"
+                    + "loseNumber = ?,"
+                    + "drawNumber = ?,"
+                    + "elo = ?,"
+                     + "playerRank = ?"
+                  //  + "unfinished = ?,"
+                    + " WHERE ID = ? ";
 
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setInt(1, t.getPlayerID());
-            pst.setString(2, t.getPlayerUserName());
-            pst.setString(3, t.getPlayerPassWord());
+            pst.setInt(1, t.getNumberOfGame());
+            pst.setDouble(2, t.getPlayerWinRate());
+            pst.setInt(3, t.getPlayerScore());
+            pst.setInt(4, t.getWinNumber());
+            pst.setInt(5, t.getLoseNumber());
+            pst.setInt(6, t.getDrawNumber());
+            pst.setDouble(7, t.getElo());
+            pst.setString(8, t.getPlayerRank());
+            pst.setInt(9, t.getPlayerID());
             //excute
-            result = pst.executeUpdate();
+             pst.executeUpdate();
          
             //close connection
             JDBCUtil.closeConnection(con);
@@ -73,7 +89,7 @@ public class PlayerDAO implements DAOInterface<Player> {
         }
     }
 
-
+//DESC giam dan ASC tang dan trong sql
     @Override
     public ArrayList<Player> selectAll() {
         ArrayList<Player> playerList = new ArrayList<>();
@@ -81,14 +97,35 @@ public class PlayerDAO implements DAOInterface<Player> {
            // make connection
             Connection conn = JDBCUtil.getConnection();
             // query
-            String sql = "SELECT * FROM player";
+            String sql = "SELECT * FROM player ORDER BY elo DESC";
             
             PreparedStatement pst = conn.prepareStatement(sql);
             //excute
             ResultSet rs =  pst.executeQuery();
             
-            JDBCUtil.closeConnection(conn);
-        } catch (Exception e) {
+         
+            //add component
+             while (rs.next()) {
+                        playerList.add(new Player(rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getInt(5),
+                        rs.getDouble(6),
+                        rs.getInt(7),
+                        rs.getInt(8),
+                        rs.getInt(9),
+                        rs.getInt(10),
+                        rs.getDouble(11),
+                        rs.getString(12)
+                    )
+                );
+            }
+             JDBCUtil.closeConnection(conn);
+          
+        }
+         catch (Exception e) {
+            e.printStackTrace();
         }
         
         return playerList;
@@ -100,8 +137,23 @@ public class PlayerDAO implements DAOInterface<Player> {
     }
 
     @Override
-    public ArrayList<Player> selectByCondition(String condition) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public ArrayList<Player> selectByCondition() {
+         ArrayList<Player> playerList = new ArrayList<>();
+        try {
+           // make connection
+            Connection conn = JDBCUtil.getConnection();
+            // query
+            String sql = "SELECT playerUserName,playerRank,numberOfGame,playerWinRate, FROM player";
+            
+            PreparedStatement pst = conn.prepareStatement(sql);
+            //excute
+            ResultSet rs =  pst.executeQuery();
+            
+            JDBCUtil.closeConnection(conn);
+        } catch (Exception e) {
+        }
+        
+        return playerList;
     }
     
     @Override
@@ -137,11 +189,15 @@ public class PlayerDAO implements DAOInterface<Player> {
                 return new Player(rs.getInt(1),
                         rs.getString(2),
                         rs.getString(3),
-                        rs.getInt(4),
+                        rs.getString(4),
                         rs.getInt(5),
                         rs.getDouble(6),
                         rs.getInt(7),
-                        rs.getString(8));
+                        rs.getInt(8),
+                        rs.getInt(9),
+                        rs.getInt(10),
+                        rs.getDouble(11),
+                        rs.getString(12));
             }
 
         } catch (SQLException e) {

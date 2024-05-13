@@ -24,7 +24,7 @@ public class JDBCUtil {
             String password = "";
             
             c = DriverManager.getConnection(url, username, password);
-            
+            System.out.println("Connect to database sucess");
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

@@ -8,9 +8,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Stack;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.plaf.metal.MetalBorders;
 import model.Caro_Button;
@@ -27,26 +25,26 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
     private final Caro_Button[][] caro_Buttons = new Caro_Button[COL][ROW];
     private static final int winScore = 999999999;
     private int gameNumber = 0;
-    public int playerTurn;
-    private static final int  allButton = COL*ROW;
+    private static final int allButton = COL * ROW;
     private int countButtonEnable = 0;
-    private Stack<Caro_Button> stackOfButtons = new Stack<>();
     private Player currentPlayer;
+    private boolean playerTurn = true;
+    private int xWinScore = 0;
+    private int oWinScore = 0;
+    
     /**
      * Creates new form PlayGame
      */
-    public GameCaro1vs1(int gameMode, int playerTurn, Player currentPlayer) {
-        this.playerTurn = playerTurn;
+    public GameCaro1vs1(Player player) {
         initComponents();
-        this.currentPlayer = currentPlayer;
         this.jPanel_Container_button.setLayout(new GridLayout(23, 23));
         this.addButtonIntoBoard();
-
+        this.currentPlayer = player;
         this.getContentPane().setLayout(null);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resource_caro/icon.png")));
-        this.jTextArea1.setText("\n Luật chơi: Ai có đủ 5 X hoặc O trên cùng 1 hàng thẳng,   chéo, ngang trước thì sẽ\n giành chiến thắng \n"
+        this.jTextArea1.setText("\n Luật chơi: Ai có đủ 5 X hoặc O trên cùng 1 hàng thẳng, chéo, ngang trước thì sẽ\n giành chiến thắng \n"
                 + "\n Sẽ không tính thắng với hai trường hợp sau:"
                 + "\n - Quân thứ 5 của bạn ở hàng cuối hoặc cột cuối"
                 + "\n - Bạn đã có đủ 5 quân theo luật nhưng bị chặn hai đầu    của quân đối thủ"
@@ -64,13 +62,14 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
                     @Override
                     public void mouseReleased(MouseEvent e) {
                         Caro_Button caro_Buttons_event = (Caro_Button) e.getSource();
-                  
-                        if (caro_Buttons_event.isEnabled()) {
-                            caro_Buttons_event.setState(true);
-                            countButtonEnable++;
-                            checkDraw();
-                        }
 
+                        if (caro_Buttons_event.isEnabled()) {
+                            caro_Buttons_event.setState(playerTurn);
+                            countButtonEnable++;
+                            checkWin();
+                            checkDraw();
+                            playerTurn = playerTurn == true ? false : true;
+                        }
                     }
 
                     @Override
@@ -93,9 +92,6 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
         }
     }
 
-  
-
-   
     private void newGame() {
         gameNumber++;
         countButtonEnable = 0;
@@ -106,29 +102,33 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
                 caro_Buttons[i][j].resetState();
             }
         }
-        if (playerTurn == 1 && gameNumber == 1) {
-            JOptionPane.showMessageDialog(rootPane, "Máy đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
-            caro_Buttons[9][9].setState(false);
+    }
+
+    public void checkWin() {
+        if (getScore(getMatrixBoard(), playerTurn, !playerTurn) >= winScore) {
+            newGame();
+            if (playerTurn) {
+                 JOptionPane.showMessageDialog(rootPane, "Người chơi X thắng nhường cho người chơi O đi trước nhé", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
+                 this.Jlabel_Score_X.setText(++xWinScore+"");
+            }else{
+                 JOptionPane.showMessageDialog(rootPane, "Người chơi O thắng nhường cho người chơi X đi trước nhé", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
+                  this.jlabel_score_O.setText(++oWinScore+"");
+            }
             countButtonEnable++;
-            stackOfButtons.push(caro_Buttons[9][9]);
-        } else if (playerTurn == 0 && gameNumber == 1) {
-            JOptionPane.showMessageDialog(rootPane, "Bạn đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-
-    private void checkDraw(){
+    private void checkDraw() {
+        int i = 1;
         if (countButtonEnable == allButton) {
             JOptionPane.showMessageDialog(null, "Hòa Rồi Nhé");
-            JOptionPane.showMessageDialog(rootPane, "Bạn đã được máy nhường đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
+            this.jLabelDrawScore.setText("Hòa: " + i++);
             newGame();
-            stackOfButtons.pop().setBorder(new MetalBorders.ButtonBorder());
         }
     }
-    
-     
-     // Tìm tất cả những ô trống có đánh XO liền kề
-     public int getScore(int[][] boardMatrix, boolean forX, boolean blacksTurn) {
+
+    // Tìm tất cả những ô trống có đánh XO liền kề
+    public int getScore(int[][] boardMatrix, boolean forX, boolean blacksTurn) {
 
         return evaluateHorizontal(boardMatrix, forX, blacksTurn)
                 + evaluateVertical(boardMatrix, forX, blacksTurn)
@@ -169,7 +169,7 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
                     blocks = 2;
                 }
             }
-            
+
             // 3. Ra: nhưng lúc này đang ở cuối. Nếu liên tục thì vẫn tính cho đến hết dòng
             if (consecutive > 0) {
                 score += getConsecutiveSetScore(consecutive, blocks, forX == playersTurn);
@@ -298,7 +298,8 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
         return score;
     }
 
-     public static int getConsecutiveSetScore(int count, int blocks, boolean currentTurn) {
+    public static int getConsecutiveSetScore(int count, int blocks, boolean currentTurn) {
+        final int winGuarantee = 100000;
         if (blocks == 2 && count <= 5) {
             return 0;
         }
@@ -307,10 +308,56 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
             case 5: {
                 return winScore;
             }
+            case 4: {
+                // Đang 4 -> Tuỳ theo lược và bị chặn
+                if (currentTurn) {
+                    return winGuarantee;
+                } else {
+                    if (blocks == 0 || blocks == 1) {
+                        return winGuarantee / 2;
+                    } else {
+                        return 500;
+                    }
+                }
+            }
+            case 3: {
+                // Đang 3: Block = 0
+                if (blocks == 0) {
+                    // Nếu lược của currentTurn thì ăn 3 + 1 = 4 (không bị block) -> 50000 -> Khả năng thắng cao. 
+                    // Ngược lại không phải lược của currentTurn thì khả năng bị blocks cao
+                    if (currentTurn) {
+                        return winGuarantee / 3;
+                    } else {
+                        return 200;
+                    }
+                } else {
+                    // Block == 1 hoặc Blocks == 2
+                    if (currentTurn) {
+                        return 10;
+                    } else {
+                        return 5;
+                    }
+                }
+            }
+            case 2: {
+                // Tương tự với 2
+                if (blocks == 0) {
+                    if (currentTurn) {
+                        return 7;
+                    } else {
+                        return 5;
+                    }
+                } else {
+                    return 3;
+                }
+            }
+            case 1: {
+                return 1;
+            }
+        }
+        return winScore * 2;
     }
-            return winScore;
-   }
-     
+
     public int[][] getMatrixBoard() {
         int[][] matrix = new int[ROW][COL];
         for (int i = 0; i < caro_Buttons.length; i++) {
@@ -334,12 +381,13 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
         jpanel_container_player = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jlabel_score = new javax.swing.JLabel();
-        Jlabel_Score_Human = new javax.swing.JLabel();
+        Jlabel_Score_X = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jlabel_score_AI = new javax.swing.JLabel();
+        jlabel_score_O = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jlabel_game_count = new javax.swing.JLabel();
+        jLabelDrawScore = new javax.swing.JLabel();
         jPanel_Container_button = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -363,17 +411,17 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
         jlabel_score.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlabel_score.setText("Tỉ Số : ");
 
-        Jlabel_Score_Human.setFont(new java.awt.Font("Source Serif Pro Black", 3, 48)); // NOI18N
-        Jlabel_Score_Human.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Jlabel_Score_Human.setText("0");
+        Jlabel_Score_X.setFont(new java.awt.Font("Source Serif Pro Black", 3, 48)); // NOI18N
+        Jlabel_Score_X.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Jlabel_Score_X.setText("0");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI Black", 1, 48)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText(":");
 
-        jlabel_score_AI.setFont(new java.awt.Font("Source Serif Pro Black", 3, 48)); // NOI18N
-        jlabel_score_AI.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jlabel_score_AI.setText("0");
+        jlabel_score_O.setFont(new java.awt.Font("Source Serif Pro Black", 3, 48)); // NOI18N
+        jlabel_score_O.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jlabel_score_O.setText("0");
 
         jLabel7.setText("X");
 
@@ -385,27 +433,36 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
         jlabel_game_count.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jlabel_game_count.setText("Game");
 
+        jLabelDrawScore.setText("Hòa: 0");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(127, 127, 127)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel11)
-                .addGap(158, 158, 158))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jlabel_score, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Jlabel_Score_Human, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlabel_score_AI, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(99, 99, 99))
             .addComponent(jlabel_game_count, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jlabel_score, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Jlabel_Score_X, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 33, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel7)
+                        .addGap(81, 81, 81)
+                        .addComponent(jLabelDrawScore, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jlabel_score_O, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(99, 99, 99))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(148, 148, 148))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -415,13 +472,14 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlabel_score, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Jlabel_Score_Human, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(Jlabel_Score_X, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlabel_score_AI))
+                    .addComponent(jlabel_score_O))
                 .addGap(8, 8, 8)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jLabel11))
+                    .addComponent(jLabel11)
+                    .addComponent(jLabelDrawScore))
                 .addContainerGap())
         );
 
@@ -491,7 +549,7 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -536,10 +594,11 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JLabel Jlabel_Score_Human;
+    public javax.swing.JLabel Jlabel_Score_X;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelDrawScore;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -549,7 +608,7 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
     private javax.swing.JButton jbutton_go_back;
     public javax.swing.JLabel jlabel_game_count;
     private javax.swing.JLabel jlabel_score;
-    public javax.swing.JLabel jlabel_score_AI;
+    public javax.swing.JLabel jlabel_score_O;
     private javax.swing.JPanel jpanel_container_player;
     // End of variables declaration//GEN-END:variables
 }

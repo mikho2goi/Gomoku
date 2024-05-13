@@ -4,6 +4,8 @@
  */
 package view;
 
+import database.PlayerDAO;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.plaf.metal.MetalBorders;
 import model.Caro_Button;
 import model.Player;
@@ -29,7 +32,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     private int gameNumber = 0;
     private int userWin = 0;
     private int aIWin = 0;
-    private int gameMode;
+    private int botLevel;
     public int playerTurn;
     private static final int  allButton = COL*ROW;
     private int countButtonEnable = 0;
@@ -38,8 +41,8 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     /**
      * Creates new form PlayGame
      */
-    public GameCaroWithAI(int gameMode, int playerTurn, Player currentPlayer) {
-        this.gameMode = gameMode;
+    public GameCaroWithAI(int botLevel, int playerTurn, Player currentPlayer) {
+        this.botLevel = botLevel;
         this.currentPlayer = currentPlayer;
         initComponents();
         this.playerTurn = playerTurn;
@@ -74,10 +77,14 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                   
                         if (caro_Buttons_event.isEnabled()) {
                             caro_Buttons_event.setState(true);
+                            
                             countButtonEnable++;
                             if (getScore(getMatrixBoard(), true, false) >= winScore) {
                                 JOptionPane.showMessageDialog(null, "Bạn đã thắng");
                                 userWin++;
+                                currentPlayer.setWinNumber(currentPlayer.getWinNumber() + 1);
+                                currentPlayer.setNumberOfGame(currentPlayer.getNumberOfGame()+ 1);
+                                currentPlayer.setElo(1, botLevel);
                                 newGame();
                                 stackOfButtons.pop().setBorder(new MetalBorders.ButtonBorder());
                                 JOptionPane.showMessageDialog(rootPane, "Bạn thắng nên nhường cho máy đi trước nhé", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
@@ -116,12 +123,14 @@ public class GameCaroWithAI extends javax.swing.JFrame {
 
    
     private void newGame() {
+        currentPlayer.setPlayerWinRate();
+        PlayerDAO.getInstance().update(currentPlayer);
         gameNumber++;
         countButtonEnable = 0;
         this.jlabel_game_count.setText("Game " + gameNumber);
         this.Jlabel_Score_Human.setText("" + userWin);
         this.jlabel_score_AI.setText("" + aIWin);
-
+        updateInformation();
         for (int i = 0; i < caro_Buttons.length; i++) {
             for (int j = 0; j < caro_Buttons.length; j++) {
                 caro_Buttons[i][j].resetState();
@@ -136,16 +145,25 @@ public class GameCaroWithAI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Bạn đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-
-     private void aiMove() {
+    
+     public void updateInformation(){
+        this.jLabelElo.setText("Elo: "+ currentPlayer.getElo());
+        this.jLabelNumberOfGame.setText("Số Trận: "+currentPlayer.getNumberOfGame());
+        this.jLabelWinScore.setText("Thắng: "+currentPlayer.getWinNumber());
+        this.jLabelLoseScore.setText("Thua: "+currentPlayer.getLoseNumber());
+        this.jLabelDrawScore.setText("Hòa: "+currentPlayer.getDrawNumber());
+        this.jlabelWinRate.setText("Tỉ lệ thắng: "+currentPlayer.getPlayerWinRate()+" %");
+     }
+    
+     public void aiMove() {
         int nextMoveX = 0, nextMoveY = 0;
-        int[] bestMove = calcNextMove(gameMode+1);
+        int[] bestMove = calcNextMove(botLevel+1);
         if (bestMove != null) {
             nextMoveX = bestMove[0];
             nextMoveY = bestMove[1];
         }
         caro_Buttons[nextMoveX][nextMoveY].setState(false);
-        
+        caro_Buttons[nextMoveX][nextMoveY].setBorder(new BasicBorders.ButtonBorder(Color.red, Color.red, Color.red, Color.red));
         countButtonEnable++;
             if (!stackOfButtons.empty()) {
              stackOfButtons.pop().setBorder(new MetalBorders.ButtonBorder());
@@ -156,9 +174,12 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         checkDraw();
     }
 
-    private void aiEndGameCheck() {
+    public void aiEndGameCheck() {
         if (getScore(getMatrixBoard(), false, true) >= winScore) {
             JOptionPane.showMessageDialog(null, "Bạn đã thua");
+            currentPlayer.setLoseNumber(currentPlayer.getLoseNumber() + 1);
+            currentPlayer.setNumberOfGame(currentPlayer.getNumberOfGame()+ 1);
+            currentPlayer.setElo(-1, -botLevel);
             aIWin++;
             JOptionPane.showMessageDialog(rootPane, "Bạn đã được máy nhường đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
             newGame();
@@ -166,8 +187,11 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         }
     }
     
-    private void checkDraw(){
+    public void checkDraw(){
         if (countButtonEnable == allButton) {
+            currentPlayer.setDrawNumber(currentPlayer.getDrawNumber() + 1);
+            currentPlayer.setNumberOfGame(currentPlayer.getNumberOfGame()+ 1);
+            currentPlayer.setElo(0,botLevel);
             JOptionPane.showMessageDialog(null, "Hòa Rồi Nhé");
             JOptionPane.showMessageDialog(rootPane, "Bạn đã được máy nhường đi trước", "Ván mới", JOptionPane.INFORMATION_MESSAGE);
             newGame();
@@ -636,9 +660,16 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         jpanel_container_player = new javax.swing.JPanel();
         jpanel_player1 = new javax.swing.JPanel();
         jLabel_image_player2 = new javax.swing.JLabel();
-        jLabel_image_player1 = new javax.swing.JLabel();
         jLabel_name_player2 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel_image_player1 = new javax.swing.JLabel();
         jLabel_name_human = new javax.swing.JLabel();
+        jLabelLoseScore = new javax.swing.JLabel();
+        jlabelWinRate = new javax.swing.JLabel();
+        jLabelDrawScore = new javax.swing.JLabel();
+        jLabelWinScore = new javax.swing.JLabel();
+        jLabelNumberOfGame = new javax.swing.JLabel();
+        jLabelElo = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jPanel_Container_button = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -655,6 +686,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
+        saveBoardGame = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Cờ Caro");
@@ -667,16 +699,78 @@ public class GameCaroWithAI extends javax.swing.JFrame {
 
         jpanel_player1.setForeground(new java.awt.Color(255, 255, 255));
 
-        jLabel_image_player1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        jLabel_image_player1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-
         jLabel_name_player2.setFont(new java.awt.Font("Cambria", 0, 14)); // NOI18N
         jLabel_name_player2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel_name_player2.setText("Terminal");
 
+        jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 255, 153), 3));
+
+        jLabel_image_player1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        jLabel_image_player1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
         jLabel_name_human.setFont(new java.awt.Font("Cambria", 0, 14)); // NOI18N
         jLabel_name_human.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel_name_human.setText("Ewersdf");
+
+        jLabelLoseScore.setText("Thua");
+
+        jlabelWinRate.setText("Tỉ Lệ");
+
+        jLabelDrawScore.setText("Hòa");
+
+        jLabelWinScore.setText("Thắng");
+
+        jLabelNumberOfGame.setText("Số Trận");
+
+        jLabelElo.setText("Elo");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelLoseScore, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelDrawScore, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelElo, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlabelWinRate, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel_name_human, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel_image_player1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabelWinScore, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabelNumberOfGame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(113, 113, 113))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(jLabel_image_player1, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel_name_human)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelWinScore)
+                    .addComponent(jLabelNumberOfGame))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelElo)
+                    .addComponent(jLabelLoseScore, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlabelWinRate)
+                    .addComponent(jLabelDrawScore)))
+        );
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Black", 0, 48)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -687,20 +781,15 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         jpanel_player1Layout.setHorizontalGroup(
             jpanel_player1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpanel_player1Layout.createSequentialGroup()
-                .addGroup(jpanel_player1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpanel_player1Layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(jLabel_name_human, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jpanel_player1Layout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(jLabel_image_player1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(54, 54, 54)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
-                .addGroup(jpanel_player1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel_image_player2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel_name_player2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jpanel_player1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel_name_player2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel_image_player2, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(55, 55, 55))
         );
         jpanel_player1Layout.setVerticalGroup(
             jpanel_player1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -708,25 +797,26 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jpanel_player1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpanel_player1Layout.createSequentialGroup()
-                        .addComponent(jLabel_image_player1, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel_name_human)
-                        .addContainerGap(14, Short.MAX_VALUE))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jpanel_player1Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jpanel_player1Layout.createSequentialGroup()
-                        .addComponent(jLabel_image_player2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel_name_player2)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(jpanel_player1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jpanel_player1Layout.createSequentialGroup()
+                                .addComponent(jLabel_image_player2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel_name_player2)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
 
         javax.swing.GroupLayout jpanel_container_playerLayout = new javax.swing.GroupLayout(jpanel_container_player);
         jpanel_container_player.setLayout(jpanel_container_playerLayout);
         jpanel_container_playerLayout.setHorizontalGroup(
             jpanel_container_playerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jpanel_player1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jpanel_container_playerLayout.createSequentialGroup()
+                .addComponent(jpanel_player1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jpanel_container_playerLayout.setVerticalGroup(
             jpanel_container_playerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -741,7 +831,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         jPanel_Container_button.setLayout(jPanel_Container_buttonLayout);
         jPanel_Container_buttonLayout.setHorizontalGroup(
             jPanel_Container_buttonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 656, Short.MAX_VALUE)
+            .addGap(0, 660, Short.MAX_VALUE)
         );
         jPanel_Container_buttonLayout.setVerticalGroup(
             jPanel_Container_buttonLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -792,8 +882,8 @@ public class GameCaroWithAI extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(107, 107, 107)
-                .addComponent(humanScore)
-                .addGap(118, 118, 118)
+                .addComponent(humanScore, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(101, 101, 101)
                 .addComponent(AIScore)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -805,7 +895,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jlabel_score_AI, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(99, 99, 99))
+                .addGap(85, 85, 85))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jlabel_game_count, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -839,7 +929,9 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -848,9 +940,11 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jButton1.setText("bàn cờ cũ");
+        jButton1.setText("Bàn Cờ Cũ");
         jButton1.setToolTipText("");
         jButton1.setActionCommand("");
+
+        saveBoardGame.setText("Lưu Lại Bàn Cờ");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -859,11 +953,15 @@ public class GameCaroWithAI extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jbutton_go_back, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(57, 57, 57)
+                .addComponent(saveBoardGame)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26))
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -873,8 +971,9 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jbutton_go_back, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jbutton_go_back, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(saveBoardGame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -884,9 +983,9 @@ public class GameCaroWithAI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jpanel_container_player, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jpanel_container_player, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel_Container_button, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
@@ -894,7 +993,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
                 .addComponent(jpanel_container_player, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jPanel_Container_button, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -919,6 +1018,11 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabelDrawScore;
+    private javax.swing.JLabel jLabelElo;
+    private javax.swing.JLabel jLabelLoseScore;
+    private javax.swing.JLabel jLabelNumberOfGame;
+    private javax.swing.JLabel jLabelWinScore;
     private javax.swing.JLabel jLabel_image_player1;
     private javax.swing.JLabel jLabel_image_player2;
     public javax.swing.JLabel jLabel_name_human;
@@ -926,14 +1030,17 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     public javax.swing.JPanel jPanel_Container_button;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JButton jbutton_go_back;
+    private javax.swing.JLabel jlabelWinRate;
     public javax.swing.JLabel jlabel_game_count;
     private javax.swing.JLabel jlabel_score;
     public javax.swing.JLabel jlabel_score_AI;
     private javax.swing.JPanel jpanel_container_player;
     private javax.swing.JPanel jpanel_player1;
+    private javax.swing.JButton saveBoardGame;
     // End of variables declaration//GEN-END:variables
 }

@@ -4,6 +4,7 @@
  */
 package view;
 
+import database.PlayerDAO;
 import java.awt.Toolkit;
 import javax.swing.JOptionPane;
 import model.Player;
@@ -40,7 +41,7 @@ public class MainMenu extends javax.swing.JFrame {
         humanMode = new javax.swing.JButton();
         AIMode = new javax.swing.JButton();
         rankBoard = new javax.swing.JButton();
-        accountData = new javax.swing.JButton();
+        signOut = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -49,7 +50,7 @@ public class MainMenu extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Caro game");
 
-        humanMode.setText("1 vs 1");
+        humanMode.setText("1 vs 1 (Offline)");
         humanMode.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 humanModeActionPerformed(evt);
@@ -70,10 +71,10 @@ public class MainMenu extends javax.swing.JFrame {
             }
         });
 
-        accountData.setText("Thông tin cá nhân");
-        accountData.addActionListener(new java.awt.event.ActionListener() {
+        signOut.setText("Đăng Xuất");
+        signOut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                accountDataActionPerformed(evt);
+                signOutActionPerformed(evt);
             }
         });
 
@@ -82,15 +83,15 @@ public class MainMenu extends javax.swing.JFrame {
         panel1Layout.setHorizontalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel1Layout.createSequentialGroup()
-                .addGap(65, 65, 65)
-                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(humanMode, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(accountData))
-                .addGap(131, 131, 131)
+                .addGap(24, 24, 24)
+                .addComponent(humanMode, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35)
+                .addComponent(AIMode, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
                 .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(rankBoard, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
-                    .addComponent(AIMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(58, Short.MAX_VALUE))
+                    .addComponent(signOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(rankBoard, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         panel1Layout.setVerticalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -98,12 +99,11 @@ public class MainMenu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(humanMode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(AIMode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(41, 41, 41)
-                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(accountData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(AIMode, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(rankBoard, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addComponent(signOut, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -133,7 +133,7 @@ public class MainMenu extends javax.swing.JFrame {
 
     private void humanModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_humanModeActionPerformed
         // TODO add your handling code here:
-             GameCaro1vs1 game = new GameCaro1vs1(SOMEBITS, PROPERTIES, player);
+             GameCaro1vs1 game = new GameCaro1vs1(player);
              this.dispose();
     }//GEN-LAST:event_humanModeActionPerformed
 
@@ -146,11 +146,20 @@ public class MainMenu extends javax.swing.JFrame {
 
     private void rankBoardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rankBoardActionPerformed
         // TODO add your handling code here:
+        RankBoard rankBoard = new RankBoard(PlayerDAO.getInstance().selectAll());
+        PlayerDAO.getInstance().selectAll();
+        rankBoard.setDefaultCloseOperation(1);
     }//GEN-LAST:event_rankBoardActionPerformed
 
-    private void accountDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accountDataActionPerformed
+    private void signOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signOutActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_accountDataActionPerformed
+       int result = JOptionPane.showConfirmDialog(this, "Bạn Chắc Muốn Đăng Xuất Chứ?","Messeage",JOptionPane.YES_NO_OPTION);
+        if (result == 0) {
+         this.dispose();
+         LoginForm loginForm = new LoginForm();
+        }
+     
+    }//GEN-LAST:event_signOutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -159,10 +168,10 @@ public class MainMenu extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton AIMode;
-    private javax.swing.JButton accountData;
     private javax.swing.JButton humanMode;
     private javax.swing.JLabel jLabel1;
     private java.awt.Panel panel1;
     private javax.swing.JButton rankBoard;
+    private javax.swing.JButton signOut;
     // End of variables declaration//GEN-END:variables
 }
