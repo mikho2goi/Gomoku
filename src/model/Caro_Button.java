@@ -13,12 +13,9 @@ import javax.swing.plaf.metal.MetalBorders;
 
 public class Caro_Button extends JButton {
 
-    public static boolean isXMove = true;
     public int value = 0;
     private final ImageIcon xImageIcon = new ImageIcon("src/resource_caro/x.png");
     private final ImageIcon oImageIcon = new ImageIcon("src/resource_caro/o.png");
-    public boolean state;
-    public ImageIcon playerImagePlay;
     Caro_Button _this = this;
 
     public Caro_Button(int x, int y, boolean state) {
@@ -37,7 +34,6 @@ public class Caro_Button extends JButton {
             public void mouseEntered(MouseEvent e) {
                 if (_this.isEnabled()) {
                     _this.setBorder(new BasicBorders.ButtonBorder(Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN));
-                    _this.setIcon(playerImagePlay);
                 }
             }
 
@@ -81,5 +77,6 @@ public class Caro_Button extends JButton {
         this.value = 0;
         this.setEnabled(true);
         this.setIcon(null);
+        this.setBorder(new MetalBorders.ButtonBorder());
     }
 }

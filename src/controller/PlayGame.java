@@ -4,27 +4,15 @@
  */
 package controller;
 
-import view.ChoseBot;
-import view.GameCaro1vs1;
-import view.GameCaroWithAI;
 import view.LoginForm;
-import view.MainMenu;
-import view.RegisterForm;
 
 /**
  *
  * @author ASUS
  */
 public class PlayGame {
-    private RegisterForm registerForm;
-    private GameCaro1vs1 gameCaro1vs1;
-    private GameCaroWithAI gameCaroWithAI;
-    private MainMenu mainMenu;
-    private ChoseBot choseBot;
     public static void main(String[] args) {
         
        LoginForm loginForm = new LoginForm();
-       
-       
     }
 }

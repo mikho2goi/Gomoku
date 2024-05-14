@@ -12,18 +12,17 @@ import model.Player;
  * @author ASUS
  */
 public interface DAOInterface<T> {
-    
+
     public int insert(T t);
-    
+
     public void update(T t);
-    
+
     public ArrayList<T> selectAll();
+
+    public boolean checkDuplicated(String username);
+
+    public Player verifyPlayer(Player player);
     
-    public T selectById(T t);
     
-    public ArrayList<T> selectByCondition();
     
-     public boolean checkDuplicated(String username) ;
-     
-     public Player verifyPlayer(Player player);
 }

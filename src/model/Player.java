@@ -19,20 +19,10 @@ public class Player {
     private String playerPassWord;
     private String playerRank;
     private double playerWinRate;
-    private int playerScore = 0;
     private int numberOfGame = 0;
-    private Queue<Object> unfinishedBoard = null;
-    private final int winScore = 2;
-    private final int loseScore = 0;
-    private final int drawScore = 1;
+    private String unfinishedBoard = null;
     private int winNumber = 0;
-
     private int loseNumber = 0;
-
-    @Override
-    public String toString() {
-        return "Player{" + "playerID=" + playerID + ", playerUserName=" + playerUserName + ", playerPassWord=" + playerPassWord + ", playerRank=" + playerRank + ", playerWinRate=" + playerWinRate + ", playerScore=" + playerScore + ", numberOfGame=" + numberOfGame + ", unfinishedBoard=" + unfinishedBoard + ", winScore=" + winScore + ", loseScore=" + loseScore + ", drawScore=" + drawScore + ", winNumber=" + winNumber + ", loseNumber=" + loseNumber + ", drawNumber=" + drawNumber + ", elo=" + elo + '}';
-    }
     private int drawNumber = 0;
     private double elo;
 
@@ -41,19 +31,27 @@ public class Player {
         this.playerPassWord = playerPassWord;
     }
 
-    public Player(int ID, String playerUserName, String playerPassWord, String playerRank, int numberOfGame, double playerWinRate, int playerScore, int winNumber, int loseNumber, int drawNumber, double elo, String unFinishedBoard) {
+    public Player(int ID, String playerUserName, String playerPassWord, String playerRank, int numberOfGame, double playerWinRate, int winNumber, int loseNumber, int drawNumber, double elo, String unFinishedBoard) {
 
         this.playerID = ID;
         this.playerUserName = playerUserName;
         this.playerPassWord = playerPassWord;
         this.playerRank = playerRank;
         this.playerWinRate = playerWinRate;
-        this.playerScore = playerScore;
         this.numberOfGame = numberOfGame;
         this.drawNumber = drawNumber;
         this.winNumber = winNumber;
         this.loseNumber = loseNumber;
         this.elo = elo;
+        this.unfinishedBoard = unFinishedBoard;
+    }
+
+    public String getUnfinishedBoard() {
+        return unfinishedBoard;
+    }
+
+    public void setUnfinishedBoard(String unfinishedBoard) {
+        this.unfinishedBoard = unfinishedBoard;
     }
 
     public int getPlayerID() {
@@ -74,10 +72,6 @@ public class Player {
 
     public double getPlayerWinRate() {
         return playerWinRate;
-    }
-
-    public int getPlayerScore() {
-        return playerScore;
     }
 
     public int getNumberOfGame() {
@@ -112,24 +106,8 @@ public class Player {
         }
     }
 
-    public void setPlayerScore(int playerScore) {
-        this.playerScore = playerScore;
-    }
-
     public void setNumberOfGame(int numberOfGame) {
         this.numberOfGame = numberOfGame;
-    }
-
-    public void setScoreWin() {
-        this.playerScore += winScore;
-    }
-
-    public void setScoreLose() {
-        this.playerScore += loseScore;
-    }
-
-    public void setScoreDraw() {
-        this.playerScore += drawScore;
     }
 
     public int getWinNumber() {
@@ -159,57 +137,70 @@ public class Player {
     public double getElo() {
         return this.elo;
     }
+//silver mode vừa w25 L -18, mode dễ w 10 L -15, mode khó l -14 w55
 
     public void setElo(int score, int botLevel) {
-        if (this.elo < 250) {
+        if (score == 0) {
+            this.elo += 0;
+        } else if (this.elo < 350) {
             if (score == -1) {
-                this.elo += score * 5 + botLevel * 10;
+                this.elo += botLevel * 5;
             } else {
-                this.elo += score * 20 + botLevel * 20;
+                this.elo += botLevel * 25;
             }
-            this.setPlayerRank("UNRANK");
-        } else if (this.elo >= 250 && this.elo <= 350) {
+        } else if (this.elo >= 350 && this.elo <= 700) {
             if (score == -1) {
-                this.elo += score * 10 + botLevel * 5;
+                this.elo += botLevel * 10;
             } else {
-                this.elo += score * 15 + botLevel * 20;
+                this.elo += botLevel * 20;
             }
-            this.setPlayerRank("BRONZE");
 
-        } else if (this.elo >= 350 && this.elo <= 450) {
+        } else if (this.elo >= 700 && this.elo <= 1050) {
             if (score == -1) {
-                this.elo += score * 15 + botLevel * 3;
+                this.elo += botLevel * 10;
             } else {
-                this.elo += score * 10 + botLevel * 15;
+                this.elo += botLevel * 15;
             }
-            this.setPlayerRank("SILVER");
-        } else if (this.elo >= 450 && this.elo <= 600) {
-            if (score == -1) {
-                this.elo += score * 15 + botLevel * 2;
-            } else {
-                this.elo += score * 5 + botLevel * 10;
-            }
-            this.setPlayerRank("*GOLD*");
-        } else if (this.elo >= 600 && this.elo <= 800) {
-            if (score == -1) {
-                this.elo += score * 20 + botLevel;
-            } else {
-                this.elo += score * 3 + botLevel * 3;
-            }
-            this.setPlayerRank("**PLATINUM**");
 
-        } else if (this.elo > 800) {
+        } else if (this.elo >= 1050 && this.elo <= 1400) {
             if (score == -1) {
-                this.elo += score * 30 + botLevel;
+                this.elo += botLevel * 15;
             } else {
-                this.elo += score + botLevel * 2;
+                this.elo += botLevel * 10;
             }
-            this.setPlayerRank(">>>***DIMOND***<<<");
 
+        } else if (this.elo >= 1400 && this.elo <= 1750) {
+            if (score == -1) {
+                this.elo += botLevel * 20;
+            } else {
+                this.elo += botLevel * 10;
+            }
+
+        } else if (this.elo > 1750) {
+            if (score == -1) {
+                this.elo += botLevel * 25;
+            } else {
+                this.elo += botLevel * 5;
+            }
         }
+        setRank();
         PlayerDAO.getInstance().update(this);
     }
-    
-    
+
+    public void setRank() {
+        if (this.elo < 350) {
+            this.setPlayerRank("UNRANK");
+        } else if (this.elo >= 350 && this.elo <= 700) {
+            this.setPlayerRank("BRONZE");
+        } else if (this.elo >= 700 && this.elo <= 1050) {
+            this.setPlayerRank("SILVER");
+        } else if (this.elo >= 1050 && this.elo <= 1400) {
+            this.setPlayerRank("*GOLD*");
+        } else if (this.elo >= 1400 && this.elo <= 1750) {
+            this.setPlayerRank("**PLATINUM**");
+        } else if (this.elo > 1750) {
+            this.setPlayerRank(">>>***DIMOND***<<<");
+        }
+    }
+
 }
-// bronze1000 silver150 gold200 platinum250 dimond300

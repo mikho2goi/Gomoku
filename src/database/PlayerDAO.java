@@ -4,7 +4,6 @@
  */
 package database;
 
-import database.JDBCUtil;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import model.Player;
@@ -18,7 +17,6 @@ import java.sql.ResultSet;
  *
  * @author ASUS
  */
-
 public class PlayerDAO implements DAOInterface<Player> {
 
     public static PlayerDAO getInstance() {
@@ -41,7 +39,7 @@ public class PlayerDAO implements DAOInterface<Player> {
             pst.setString(2, t.getPlayerPassWord());
             //excute
             result = pst.executeUpdate();
-         
+
             //close connection
             JDBCUtil.closeConnection(con);
         } catch (SQLException ex) {
@@ -59,29 +57,28 @@ public class PlayerDAO implements DAOInterface<Player> {
             String sql = "UPDATE player "
                     + "SET numberOfGame = ?,"
                     + "playerWinRate = ?,"
-                    + "playerScore = ?,"
                     + "winNumber = ?,"
                     + "loseNumber = ?,"
                     + "drawNumber = ?,"
                     + "elo = ?,"
-                     + "playerRank = ?"
-                  //  + "unfinished = ?,"
+                    + "playerRank = ?,"
+                     + "unfinishedBoard = ?"
                     + " WHERE ID = ? ";
 
             PreparedStatement pst = con.prepareStatement(sql);
 
             pst.setInt(1, t.getNumberOfGame());
             pst.setDouble(2, t.getPlayerWinRate());
-            pst.setInt(3, t.getPlayerScore());
-            pst.setInt(4, t.getWinNumber());
-            pst.setInt(5, t.getLoseNumber());
-            pst.setInt(6, t.getDrawNumber());
-            pst.setDouble(7, t.getElo());
-            pst.setString(8, t.getPlayerRank());
+            pst.setInt(3, t.getWinNumber());
+            pst.setInt(4, t.getLoseNumber());
+            pst.setInt(5, t.getDrawNumber());
+            pst.setDouble(6, t.getElo());
+            pst.setString(7, t.getPlayerRank());
+            pst.setString(8, t.getUnfinishedBoard());
             pst.setInt(9, t.getPlayerID());
             //excute
-             pst.executeUpdate();
-         
+            pst.executeUpdate();
+
             //close connection
             JDBCUtil.closeConnection(con);
         } catch (SQLException ex) {
@@ -94,19 +91,18 @@ public class PlayerDAO implements DAOInterface<Player> {
     public ArrayList<Player> selectAll() {
         ArrayList<Player> playerList = new ArrayList<>();
         try {
-           // make connection
+            // make connection
             Connection conn = JDBCUtil.getConnection();
             // query
             String sql = "SELECT * FROM player ORDER BY elo DESC";
-            
+
             PreparedStatement pst = conn.prepareStatement(sql);
             //excute
-            ResultSet rs =  pst.executeQuery();
-            
-         
+            ResultSet rs = pst.executeQuery();
+
             //add component
-             while (rs.next()) {
-                        playerList.add(new Player(rs.getInt(1),
+            while (rs.next()) {
+                playerList.add(new Player(rs.getInt(1),
                         rs.getString(2),
                         rs.getString(3),
                         rs.getString(4),
@@ -115,50 +111,23 @@ public class PlayerDAO implements DAOInterface<Player> {
                         rs.getInt(7),
                         rs.getInt(8),
                         rs.getInt(9),
-                        rs.getInt(10),
-                        rs.getDouble(11),
-                        rs.getString(12)
-                    )
+                        rs.getDouble(10),
+                        rs.getString(11)
+                )
                 );
             }
-             JDBCUtil.closeConnection(conn);
-          
-        }
-         catch (Exception e) {
+            JDBCUtil.closeConnection(conn);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return playerList;
     }
 
     @Override
-    public Player selectById(Player t) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public ArrayList<Player> selectByCondition() {
-         ArrayList<Player> playerList = new ArrayList<>();
-        try {
-           // make connection
-            Connection conn = JDBCUtil.getConnection();
-            // query
-            String sql = "SELECT playerUserName,playerRank,numberOfGame,playerWinRate, FROM player";
-            
-            PreparedStatement pst = conn.prepareStatement(sql);
-            //excute
-            ResultSet rs =  pst.executeQuery();
-            
-            JDBCUtil.closeConnection(conn);
-        } catch (Exception e) {
-        }
-        
-        return playerList;
-    }
-    
-    @Override
-       public boolean checkDuplicated(String username) {
-           Connection con = JDBCUtil.getConnection();
+    public boolean checkDuplicated(String username) {
+        Connection con = JDBCUtil.getConnection();
         try {
             PreparedStatement preparedStatement = con.prepareStatement("SELECT * FROM player WHERE playerUserName = ?");
             preparedStatement.setString(1, username);
@@ -172,10 +141,10 @@ public class PlayerDAO implements DAOInterface<Player> {
         }
         return false;
     }
-      
-     @Override
-     public Player verifyPlayer(Player player) {
-         Connection con = JDBCUtil.getConnection();
+
+    @Override
+    public Player verifyPlayer(Player player) {
+        Connection con = JDBCUtil.getConnection();
         try {
             PreparedStatement preparedStatement = con.prepareStatement("SELECT *\n"
                     + "FROM player\n"
@@ -195,9 +164,8 @@ public class PlayerDAO implements DAOInterface<Player> {
                         rs.getInt(7),
                         rs.getInt(8),
                         rs.getInt(9),
-                        rs.getInt(10),
-                        rs.getDouble(11),
-                        rs.getString(12));
+                        rs.getDouble(10),
+                        rs.getString(11));
             }
 
         } catch (SQLException e) {
@@ -205,6 +173,6 @@ public class PlayerDAO implements DAOInterface<Player> {
         }
         return null;
     }
-     
-    
+
+
 }

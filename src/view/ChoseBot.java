@@ -126,7 +126,7 @@ private MainMenu mainMenu;
         }
           this.dispose();
           this.mainMenu.dispose();
-          GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(0, result, this.mainMenu.player);
+          GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(1, result, this.mainMenu.player);
             
     }//GEN-LAST:event_easyModeActionPerformed
 
@@ -138,7 +138,7 @@ private MainMenu mainMenu;
         }
                    this.dispose();
                           this.mainMenu.dispose();
-                 GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(1,result,mainMenu.player);
+                 GameCaroWithAI gameCaroWithAI = new GameCaroWithAI(2,result,mainMenu.player);
     }//GEN-LAST:event_middleModeActionPerformed
 
     private void hardModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hardModeActionPerformed
