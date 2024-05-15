@@ -174,5 +174,28 @@ public class PlayerDAO implements DAOInterface<Player> {
         return null;
     }
 
+    @Override
+    public void updateUnfinishedBoard(Player t) {
+         try {
+            //make connection
+            Connection con = JDBCUtil.getConnection();
+            // statement
+            String sql = "UPDATE player "
+                    + "SET unfinishedBoard = NULL"
+                    + " WHERE ID = ? ";
+
+            PreparedStatement pst = con.prepareStatement(sql);
+
+            pst.setInt(1, t.getPlayerID());
+            //excute
+            pst.executeUpdate();
+
+            //close connection
+            JDBCUtil.closeConnection(con);
+        } catch (SQLException ex) {
+            Logger.getLogger(PlayerDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 
 }

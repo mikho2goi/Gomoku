@@ -8,9 +8,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Stack;
 import javax.swing.JOptionPane;
-import javax.swing.plaf.metal.MetalBorders;
 import model.Caro_Button;
 import model.Player;
 
@@ -127,7 +125,6 @@ public class GameCaro1vs1 extends javax.swing.JFrame {
         }
     }
 
-    // Tìm tất cả những ô trống có đánh XO liền kề
     public int getScore(int[][] boardMatrix, boolean forX, boolean blacksTurn) {
 
         return evaluateHorizontal(boardMatrix, forX, blacksTurn)

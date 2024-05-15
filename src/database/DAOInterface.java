@@ -16,6 +16,8 @@ public interface DAOInterface<T> {
     public int insert(T t);
 
     public void update(T t);
+    
+    public void updateUnfinishedBoard(T t);
 
     public ArrayList<T> selectAll();
 

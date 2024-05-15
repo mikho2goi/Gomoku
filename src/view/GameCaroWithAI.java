@@ -271,19 +271,18 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         return losingMove;
     }
 
-    public Object[] minimaxSearchAB(int depth, int[][] board, boolean max, double alpha, double beta) {
+    public Object[] minimaxSearchAB(int depth, int[][] board, boolean isMax, double alpha, double beta) {
 
         ArrayList<int[]> allPossibleMoves = generateMoves(board);
 
         if (depth == 0 || allPossibleMoves.isEmpty()) {
-            return new Object[]{evaluateBoardForWhite(board, !max), null, null};
+            return new Object[]{evaluateBoardForAi(board, !isMax), null, null};
         }
 
         Object[] bestMove = new Object[3];
 
-        if (max) {
+        if (isMax) {
             bestMove[0] = -1.0;
-            int i = 0;
             for (int[] move : allPossibleMoves) {
 
                 // Chơi thử với move hiện tại
@@ -332,7 +331,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         return bestMove;
     }
 
-    public double evaluateBoardForWhite(int[][] board, boolean userTurn) {
+    public double evaluateBoardForAi(int[][] board, boolean userTurn) {
 
         double xScore = getScore(board, true, userTurn);
         double oScore = getScore(board, false, userTurn);
@@ -413,7 +412,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
                 + evaluateDiagonal(boardMatrix, forX, blacksTurn);
     }
 
-    public static int evaluateHorizontal(int[][] boardMatrix, boolean forX, boolean playersTurn) {
+    public  int evaluateHorizontal(int[][] boardMatrix, boolean forX, boolean playersTurn) {
 
         int consecutive = 0;
         int blocks = 2;
@@ -460,7 +459,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     }
     // hàm tính toán đường dọc tương tự như đường ngang
 
-    public static int evaluateVertical(int[][] boardMatrix, boolean forX, boolean playersTurn) {
+    public  int evaluateVertical(int[][] boardMatrix, boolean forX, boolean playersTurn) {
 
         int consecutive = 0;
         int blocks = 2;
@@ -500,7 +499,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
     }
 
     // Hàm tính toán 2 đường chéo tương tự như hàng ngang
-    public static int evaluateDiagonal(int[][] boardMatrix, boolean forX, boolean playersTurn) {
+    public  int evaluateDiagonal(int[][] boardMatrix, boolean forX, boolean playersTurn) {
 
         int consecutive = 0;
         int blocks = 2;
@@ -576,7 +575,7 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         return score;
     }
 
-    public static int getConsecutiveSetScore(int count, int blocks, boolean currentTurn) {
+    public  int getConsecutiveSetScore(int count, int blocks, boolean currentTurn) {
         final int winGuarantee = 100000;
         if (blocks == 2 && count <= 5) {
             return 0;
@@ -1028,12 +1027,15 @@ public class GameCaroWithAI extends javax.swing.JFrame {
         }
         currentPlayer.setUnfinishedBoard(file + "");
         PlayerDAO.getInstance().update(currentPlayer);
+        JOptionPane.showMessageDialog(this, "Lưu Bàn Cờ Thành Công!");
     }//GEN-LAST:event_saveBoardGameActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         if (currentPlayer.getUnfinishedBoard() != null) {
             drawBoardGame();
+            PlayerDAO.getInstance().updateUnfinishedBoard(currentPlayer);
+            currentPlayer.setUnfinishedBoard(null);
         }else{
             JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu");
         }
